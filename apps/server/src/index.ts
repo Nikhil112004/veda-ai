@@ -18,6 +18,17 @@ dotenv.config({ override: true });
 
 connectDB();
 
+const connection = new IORedis({
+  host: process.env.REDIS_HOST!,
+  port: Number(process.env.REDIS_PORT!),
+  password: process.env.REDIS_PASSWORD!,
+  tls: {},
+}) as any;
+
+const redis = connection;
+const sub = connection.duplicate();
+
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -50,7 +61,7 @@ app.post("/assignments", upload.single("file"), async (req, res) => {
   }
 });
 
-const redis = new IORedis();
+
 
 app.get("/assignments/:id", async (req, res) => {
   const assignmentId = req.params.id;
@@ -75,11 +86,10 @@ const httpServer = createServer(app);
 
 initSocket(httpServer);
 
-const sub = new IORedis();
 
 sub.subscribe("job-completed");
 
-sub.on("message", (channel, message) => {
+sub.on("message", (channel: string, message: string) => {
   if (channel === "job-completed") {
     const data = JSON.parse(message);
 
