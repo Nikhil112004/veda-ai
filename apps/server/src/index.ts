@@ -11,6 +11,7 @@ import IORedis from "ioredis";
 import multer from "multer";
 import { connectDB } from "./db";
 import { Assignment } from "./models/Assignment";
+import mongoose from "mongoose";
 
 const upload = multer({ dest: "uploads/" });
 
@@ -66,27 +67,31 @@ app.post("/assignments", upload.single("file"), async (req, res) => {
   }
 });
 
+
+
 app.get("/assignments/:id", async (req, res) => {
   try {
-    const assignment = await Assignment.findById(req.params.id);
+    const id = req.params.id;
+
+    // 🔥 ADD THIS CHECK
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res.status(400).json({ status: "invalid_id" });
+    }
+
+    const assignment = await Assignment.findById(id);
 
     if (!assignment) {
       return res.status(404).json({ status: "not_found" });
     }
 
-    if (assignment.status !== "completed") {
-      return res.json({
-        status: assignment.status,
-        result: assignment.result,
-      });
-    }
-
     return res.json({
-      status: "completed",
+      status: assignment.status,
       result: assignment.result,
     });
+
   } catch (err) {
-    console.log(err);
+    console.log("❌ API ERROR:", err); // 👈 ADD THIS
+
     res.status(500).json({ status: "error" });
   }
 });
