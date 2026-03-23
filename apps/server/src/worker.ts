@@ -1,106 +1,46 @@
 import { Worker } from "bullmq";
+import express from "express";
 import { generatePaper } from "./utils/gemini";
-import "dotenv/config";
-import { results } from "./store";
-import IORedis from "ioredis";
 import { Assignment } from "./models/Assignment";
 
-const connection = new IORedis({
-  host: process.env.REDIS_HOST,
-  port: Number(process.env.REDIS_PORT),
-  password: process.env.REDIS_PASSWORD,
-  tls: {},
-  maxRetriesPerRequest: null,
-});
-
-const redis = connection;
-
-const worker = new Worker(
+// 🔥 Worker
+new Worker(
   "assignments",
   async (job) => {
-    console.log("processing job:", job.id);
-
-    const aiResponse = await generatePaper(job.data);
-    console.log("AI RAW:", aiResponse);
-
-    let parsed;
-
     try {
-      const cleaned = aiResponse
-        ?.replace(/```json/g, "")
-        ?.replace(/```/g, "")
-        ?.trim();
+      console.log("🚀 Processing job:", job.id);
 
-      const raw = JSON.parse(cleaned);
+      const { assignmentId, ...payload } = job.data;
 
-      parsed = {
-        sections:
-          raw.sections?.map((sec: any) => ({
-            title: sec.title || "Section",
-            instruction: sec.instruction || "Attempt all questions",
-            questions:
-              sec.questions?.map((q: any) => ({
-                question: q.question || q.text || "Sample question",
-                marks: q.marks || 5,
-                difficulty: q.difficulty || "medium",
-              })) || [],
-          })) || [],
-      };
+      // 🔥 AI call
+      const result = await generatePaper(payload);
 
-      if (!parsed.sections.length) {
-        throw new Error("Empty sections");
-      }
-    } catch (err) {
-      console.log("❌ PARSE ERROR:", err);
-
-      parsed = {
-        sections: [
-          {
-            title: "Section A",
-            instruction: "Attempt all questions",
-            questions: [
-              {
-                question: "Sample question",
-                marks: 5,
-                difficulty: "medium",
-              },
-            ],
-          },
-        ],
-      };
-    }
-
-    await redis.set(
-      `job:${job.data.assignmentId}`,
-      JSON.stringify(parsed),
-    );
-
-    await Assignment.findByIdAndUpdate(
-      job.data.assignmentId,
-      {
+      // ✅ DB update
+      await Assignment.findByIdAndUpdate(assignmentId, {
         status: "completed",
-        result: parsed,
-      },
-      { returnDocument: "after" },
-    );
+        result,
+      });
 
-    await redis.publish(
-      "job-completed",
-      JSON.stringify({
-        jobId: job.data.assignmentId,
-        data: parsed,
-      }),
-    );
+      console.log("✅ Completed:", assignmentId);
+    } catch (err) {
+      console.log("❌ Worker error:", err);
 
-    console.log("done:", job.id);
+      await Assignment.findByIdAndUpdate(job.data.assignmentId, {
+        status: "failed",
+      });
+    }
   },
   {
-    connection,
-  },
+    connection: {
+      host: process.env.REDIS_HOST,
+      port: Number(process.env.REDIS_PORT),
+      password: process.env.REDIS_PASSWORD,
+      tls: {},
+    },
+  }
 );
 
-import express from "express";
-
+// 🔥 Dummy server (keep alive)
 const app = express();
 
 app.get("/", (req, res) => {
@@ -108,7 +48,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(5001, () => {
-  console.log("Worker dummy server running on 5001");
+  console.log("🔥 Worker server running on port 5001");
 });
-
-export { results };
