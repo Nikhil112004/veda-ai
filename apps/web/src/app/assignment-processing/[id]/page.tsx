@@ -21,7 +21,7 @@ export default function AssignmentProcessing() {
       if (data.jobId === id) {
         setProgress(100);
 
-        localStorage.setItem("paper", JSON.stringify(data.data));
+        localStorage.setItem("paper", JSON.stringify(data.result));
 
         setTimeout(() => {
           router.push(`/generated-paper/${id}`);
@@ -45,13 +45,13 @@ export default function AssignmentProcessing() {
 
         console.log("status:", data);
 
-        if (data.status === "completed") {
+        if (data.data?.status === "completed") {
           clearInterval(interval);
           clearInterval(progressInterval);
 
           setProgress(100);
 
-          localStorage.setItem("paper", JSON.stringify(data.data));
+          localStorage.setItem("paper", JSON.stringify(data.result));
 
           setTimeout(() => {
             router.push(`/generated-paper/${id}`);
