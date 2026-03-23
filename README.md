@@ -109,7 +109,7 @@ This ensures the system never breaks even if AI fails.
 
 1. Clone repo
 
-git clone <repo-url>
+git clone https://github.com/Nikhil112004/veda-ai.git
 cd VedaAI
 
 2. Install dependencies
@@ -135,9 +135,9 @@ pnpm dev:web    # start frontend
 
 🌐 Deployment
 
-- Frontend → Vercel
-- Backend → Render 
-- Worker → Separate service
+- Frontend → https://veda-ai-web.vercel.app/
+- Backend → https://veda-ai-server.onrender.com 
+- Worker → https://veda-ai-worker-798i.onrender.com
 - MongoDB → Atlas
 - Redis → Upstash / Local
 
