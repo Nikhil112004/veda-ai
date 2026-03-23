@@ -3,8 +3,16 @@ import express from "express";
 import { connectDB } from "./db";
 import { generatePaper } from "./utils/gemini";
 import { Assignment } from "./models/Assignment";
+import IORedis from "ioredis";
 
-connectDB(); // ✅ add this
+const pub = new IORedis({
+  host: process.env.REDIS_HOST,
+  port: Number(process.env.REDIS_PORT),
+  password: process.env.REDIS_PASSWORD,
+  tls: {},
+});
+
+connectDB(); 
 
 new Worker(
   "assignments",
@@ -16,10 +24,17 @@ new Worker(
 
       const result = await generatePaper(payload);
 
-      await Assignment.findByIdAndUpdate(assignmentId, {
-        status: "completed",
-        result: result,
-      });
+     await Assignment.findByIdAndUpdate(assignmentId, {
+  status: "completed",
+  result: result,
+});
+await pub.publish(
+  "job-completed",
+  JSON.stringify({
+    jobId: assignmentId,
+    result: result,
+  })
+);
 
       console.log("✅ Completed:", assignmentId);
     } catch (err) {
