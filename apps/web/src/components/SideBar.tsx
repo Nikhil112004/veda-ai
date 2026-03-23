@@ -50,7 +50,7 @@ export default function SideBar() {
           <div onClick={() => router.push("/ai-toolkit")} className="cursor-pointer  w-full h-[40px] flex items-center gap-2 px-[12px] py-[9px] rounded-[8px]">
             <AiIcon />
             <h4 className="w-[202px] h-[22px] text-[16px] font-normal leading-[140%] tracking-[-0.04em]">
-              AI Teachers's Toolkit
+              AI Teacher's Toolkit
             </h4>
           </div>
           <div onClick={() => router.push("/my-library")} className="cursor-pointer  w-full h-[40px] flex items-center gap-2 px-[12px] py-[9px] rounded-[8px]">
