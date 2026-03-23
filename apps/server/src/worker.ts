@@ -6,12 +6,12 @@ import IORedis from "ioredis";
 import { Assignment } from "./models/Assignment";
 
 const connection = new IORedis({
-  host: process.env.REDIS_HOST!,
-  port: Number(process.env.REDIS_PORT!),
-  password: process.env.REDIS_PASSWORD!,
+  host: process.env.REDIS_HOST,
+  port: Number(process.env.REDIS_PORT),
+  password: process.env.REDIS_PASSWORD,
   tls: {},
-  maxRetriesPerRequest: null, 
-}) as any;
+  maxRetriesPerRequest: null,
+});
 
 const redis = connection;
 
