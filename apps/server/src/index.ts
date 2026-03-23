@@ -23,6 +23,7 @@ const connection = new IORedis({
   port: Number(process.env.REDIS_PORT!),
   password: process.env.REDIS_PASSWORD!,
   tls: {},
+    maxRetriesPerRequest: null,
 }) as any;
 
 const redis = connection;

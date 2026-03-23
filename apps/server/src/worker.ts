@@ -11,6 +11,7 @@ const connection = new IORedis({
   port: Number(process.env.REDIS_PORT!),
   password: process.env.REDIS_PASSWORD!,
   tls: {},
+  maxRetriesPerRequest: null, // 🔥 IMPORTANT FIX
 }) as any;
 /* ✅ USE SAME CONNECTION */
 const redis = connection;
@@ -97,8 +98,8 @@ const worker = new Worker(
     console.log("done:", job.id);
   },
   {
-    connection, 
-  }
+    connection,
+  },
 );
 
 export { results };
