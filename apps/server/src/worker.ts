@@ -1,9 +1,11 @@
 import { Worker } from "bullmq";
 import express from "express";
+import { connectDB } from "./db";
 import { generatePaper } from "./utils/gemini";
 import { Assignment } from "./models/Assignment";
 
-// 🔥 Worker
+connectDB(); // ✅ add this
+
 new Worker(
   "assignments",
   async (job) => {
@@ -12,10 +14,8 @@ new Worker(
 
       const { assignmentId, ...payload } = job.data;
 
-      // 🔥 AI call
       const result = await generatePaper(payload);
 
-      // ✅ DB update
       await Assignment.findByIdAndUpdate(assignmentId, {
         status: "completed",
         result,
@@ -24,10 +24,6 @@ new Worker(
       console.log("✅ Completed:", assignmentId);
     } catch (err) {
       console.log("❌ Worker error:", err);
-
-      await Assignment.findByIdAndUpdate(job.data.assignmentId, {
-        status: "failed",
-      });
     }
   },
   {
@@ -40,13 +36,7 @@ new Worker(
   }
 );
 
-// 🔥 Dummy server (keep alive)
+// dummy server
 const app = express();
-
-app.get("/", (req, res) => {
-  res.send("Worker running...");
-});
-
-app.listen(5001, () => {
-  console.log("🔥 Worker server running on port 5001");
-});
+app.get("/", (_, res) => res.send("Worker running"));
+app.listen(5001);
