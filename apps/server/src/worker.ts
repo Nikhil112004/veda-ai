@@ -61,7 +61,7 @@ new Worker(
         "job-completed",
         JSON.stringify({
           jobId: assignmentId,
-          result: result,
+          result: parsedResult,
         }),
       );
 
