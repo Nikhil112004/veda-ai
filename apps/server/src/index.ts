@@ -75,12 +75,15 @@ app.get("/assignments/:id", async (req, res) => {
     }
 
     if (assignment.status !== "completed") {
-      return res.json({ status: "processing" });
+      return res.json({
+        status: assignment.status,
+        result: assignment.result,
+      });
     }
 
     return res.json({
       status: "completed",
-      result: assignment.result, // ✅ FIX
+      result: assignment.result,
     });
   } catch (err) {
     console.log(err);

@@ -12,7 +12,7 @@ const pub = new IORedis({
   tls: {},
 });
 
-connectDB(); 
+connectDB();
 
 new Worker(
   "assignments",
@@ -24,21 +24,27 @@ new Worker(
 
       const result = await generatePaper(payload);
 
-     await Assignment.findByIdAndUpdate(assignmentId, {
-  status: "completed",
-  result: result,
-});
-await pub.publish(
-  "job-completed",
-  JSON.stringify({
-    jobId: assignmentId,
-    result: result,
-  })
-);
+      await Assignment.findByIdAndUpdate(assignmentId, {
+        status: "completed",
+        result: result,
+      });
+
+      await pub.publish(
+        "job-completed",
+        JSON.stringify({
+          jobId: assignmentId,
+          result: result,
+        })
+      );
 
       console.log("✅ Completed:", assignmentId);
+
     } catch (err) {
       console.log("❌ Worker error:", err);
+
+      await Assignment.findByIdAndUpdate(job.data.assignmentId, {
+        status: "failed",
+      });
     }
   },
   {
@@ -51,7 +57,7 @@ await pub.publish(
   }
 );
 
-// dummy server
+
 const app = express();
 app.get("/", (_, res) => res.send("Worker running"));
 app.listen(5001);

@@ -13,24 +13,6 @@ export default function AssignmentProcessing() {
   useEffect(() => {
     if (!id) return;
 
-    const socket = io(process.env.NEXT_PUBLIC_API_URL!);
-
-    socket.on("job-completed", (data) => {
-      console.log("SOCKET:", data);
-
-      if (data.jobId === id) {
-        setProgress(100);
-
-        localStorage.setItem(
-          "paper",
-          JSON.stringify(data.result || data.data?.result),
-        );
-
-        setTimeout(() => {
-          router.push(`/generated-paper/${id}`);
-        }, 500);
-      }
-    });
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 90) return prev;
@@ -53,10 +35,7 @@ export default function AssignmentProcessing() {
 
           setProgress(100);
 
-          localStorage.setItem(
-            "paper",
-            JSON.stringify(data.result || data.data?.result),
-          );
+          localStorage.setItem("paper", JSON.stringify(data.result));
 
           setTimeout(() => {
             router.push(`/generated-paper/${id}`);
@@ -66,10 +45,10 @@ export default function AssignmentProcessing() {
         console.log("fetch error:", err);
       }
     }, 2000);
+
     return () => {
       clearInterval(interval);
       clearInterval(progressInterval);
-      socket.disconnect();
     };
   }, [id, router]);
 
