@@ -102,4 +102,16 @@ const worker = new Worker(
   },
 );
 
+import express from "express";
+
+const app = express();
+
+app.get("/", (req, res) => {
+  res.send("Worker running...");
+});
+
+app.listen(5001, () => {
+  console.log("Worker dummy server running on 5001");
+});
+
 export { results };
