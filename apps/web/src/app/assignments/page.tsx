@@ -26,7 +26,7 @@ export default function Assignments() {
 
   useEffect(() => {
     const fetchAssignments = async () => {
-      const res = await fetch("http://localhost:5000/assignments");
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/assignments`);
       const data = await res.json();
       setAssignments(data.data);
     };
@@ -99,7 +99,7 @@ export default function Assignments() {
                   <button
                     onClick={async () => {
                       await fetch(
-                        `http://localhost:5000/assignments/${item._id}`,
+                        `${process.env.NEXT_PUBLIC_API_URL}/assignments/${item._id}`,
                         { method: "DELETE" },
                       );
 

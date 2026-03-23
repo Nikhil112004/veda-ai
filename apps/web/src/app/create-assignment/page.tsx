@@ -86,10 +86,13 @@ export default function CreateAssignment() {
       formData.append("numberOfQuestions", String(totalQuestions));
       formData.append("marks", String(totalMarks));
 
-      const res = await fetch("http://localhost:5000/assignments", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/assignments`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
 
       const data = await res.json();
 
@@ -103,7 +106,6 @@ export default function CreateAssignment() {
   return (
     <div className="h-full bg-[#ECECEC] overflow-auto">
       <div className="max-w-[1200px] mx-auto px-[16px] sm:px-[24px] lg:px-[32px] py-[20px] sm:py-[32px]">
-
         <div className="mb-[32px]">
           <div className="flex items-center gap-[12px] mb-[8px]">
             <div className="w-[8px] h-[8px] bg-[#4CAF50] rounded-full" />
@@ -115,7 +117,6 @@ export default function CreateAssignment() {
             Set up a new assignment for your students
           </p>
         </div>
-
 
         <div className="mb-[32px]">
           <div className="h-[4px] bg-white rounded-full overflow-hidden">
@@ -131,7 +132,6 @@ export default function CreateAssignment() {
             Basic information about your assignment
           </p>
 
-   
           <div className="mb-[24px]">
             <input
               type="file"
@@ -166,7 +166,6 @@ export default function CreateAssignment() {
             </p>
           </div>
 
-        
           <div className="mb-[32px]">
             <label className="block text-[14px] font-medium text-[#011625] mb-[8px]">
               Due Date
@@ -199,7 +198,6 @@ export default function CreateAssignment() {
             <div className="space-y-[12px]">
               {questionTypes.map((qt) => (
                 <div key={qt.id} className="flex items-center gap-[8px] w-full">
-          
                   <div className="flex items-center justify-between px-[12px] h-[44px] w-full sm:min-w-[180px] border border-[#E5E5E5] rounded-[10px] bg-white">
                     <span className="text-[13px] sm:text-[14px] text-[#303030] truncate">
                       {qt.type}
@@ -208,14 +206,12 @@ export default function CreateAssignment() {
                     <ChevronDown className="w-[16px] h-[16px] text-[#757575] ml-[6px]" />
                   </div>
 
-                 
                   <button
                     onClick={() => removeQuestionType(qt.id)}
                     className="w-[36px] h-[36px] flex items-center justify-center rounded-full hover:bg-[#F5F5F5]"
                   >
                     <X className="w-[16px] h-[16px] text-[#757575]" />
                   </button>
-
 
                   <div className="flex-1 flex min-w-[120px] items-center justify-between px-[12px] h-[44px] border border-[#E5E5E5] rounded-[10px]">
                     <button
@@ -247,7 +243,6 @@ export default function CreateAssignment() {
                     </button>
                   </div>
 
-
                   <div className="flex-1 flex min-w-[120px] items-center justify-between px-[12px] h-[44px] border border-[#E5E5E5] rounded-[10px]">
                     <button
                       onClick={() =>
@@ -270,8 +265,6 @@ export default function CreateAssignment() {
                 </div>
               ))}
 
-  
-
               <button
                 onClick={addQuestionType}
                 className="flex items-center gap-[6px] text-[13px] sm:text-[14px] font-medium text-white bg-[#2A2A2A] rounded-full px-[14px] sm:px-[16px] h-[40px] sm:h-[48px]"
@@ -281,7 +274,6 @@ export default function CreateAssignment() {
               </button>
             </div>
 
-    
             <div className="flex flex-col sm:flex-row sm:justify-end gap-[8px] sm:gap-[24px] mt-[16px] text-[14px]">
               <div>
                 <span className="font-medium text-[#757575]">
@@ -301,7 +293,6 @@ export default function CreateAssignment() {
               </div>
             </div>
           </div>
-
 
           <div className="mb-[32px]">
             <label className="block text-[14px] font-medium text-[#011625] mb-[8px]">

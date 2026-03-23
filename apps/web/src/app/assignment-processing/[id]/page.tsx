@@ -13,7 +13,7 @@ export default function AssignmentProcessing() {
   useEffect(() => {
     if (!id) return;
 
-    const socket = io("http://localhost:5000");
+    const socket = io(process.env.NEXT_PUBLIC_API_URL!);
 
     socket.on("job-completed", (data) => {
       console.log("SOCKET:", data);
@@ -38,7 +38,7 @@ export default function AssignmentProcessing() {
 
     const interval = setInterval(async () => {
       try {
-        const res = await fetch(`http://localhost:5000/assignments/${id}`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/assignments/${id}`);
         const data = await res.json();
 
         console.log("status:", data);

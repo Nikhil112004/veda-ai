@@ -31,7 +31,7 @@ export default function GeneratedPaper() {
 
   useEffect(() => {
     const fetchPaper = async () => {
-      const res = await fetch(`http://localhost:5000/assignments/${id}`);
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/assignments/${id}`);
       const data = await res.json();
 
       console.log("FRONT DATA:", data); // debug
