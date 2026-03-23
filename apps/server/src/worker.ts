@@ -73,8 +73,6 @@ const worker = new Worker(
     await redis.set(
       `job:${job.data.assignmentId}`,
       JSON.stringify(parsed),
-      "EX",
-      60,
     );
 
     await Assignment.findByIdAndUpdate(
