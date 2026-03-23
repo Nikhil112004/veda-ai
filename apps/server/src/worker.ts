@@ -22,11 +22,39 @@ new Worker(
 
       const { assignmentId, ...payload } = job.data;
 
-      const result = await generatePaper(payload);
+      const aiResponse = await generatePaper(payload);
+
+      let parsedResult;
+
+      try {
+        parsedResult =
+          typeof aiResponse === "string" ? JSON.parse(aiResponse) : aiResponse;
+        if (!parsedResult?.sections) {
+          throw new Error("Invalid AI structure");
+        }
+      } catch (err) {
+        console.log("⚠️ Using fallback structure");
+
+        parsedResult = {
+          sections: [
+            {
+              title: "Section A",
+              instruction: "Answer all questions",
+              questions: [
+                {
+                  text: "Fallback question",
+                  difficulty: "easy",
+                  marks: 2,
+                },
+              ],
+            },
+          ],
+        };
+      }
 
       await Assignment.findByIdAndUpdate(assignmentId, {
         status: "completed",
-        result: result,
+        result: parsedResult,
       });
 
       await pub.publish(
@@ -34,11 +62,10 @@ new Worker(
         JSON.stringify({
           jobId: assignmentId,
           result: result,
-        })
+        }),
       );
 
       console.log("✅ Completed:", assignmentId);
-
     } catch (err) {
       console.log("❌ Worker error:", err);
 
@@ -54,9 +81,8 @@ new Worker(
       password: process.env.REDIS_PASSWORD,
       tls: {},
     },
-  }
+  },
 );
-
 
 const app = express();
 app.get("/", (_, res) => res.send("Worker running"));

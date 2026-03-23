@@ -73,7 +73,7 @@ app.get("/assignments/:id", async (req, res) => {
   try {
     const id = req.params.id;
 
-    // 🔥 ADD THIS CHECK
+
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ status: "invalid_id" });
     }
@@ -90,8 +90,7 @@ app.get("/assignments/:id", async (req, res) => {
     });
 
   } catch (err) {
-    console.log("❌ API ERROR:", err); // 👈 ADD THIS
-
+    console.log("❌ API ERROR:", err); 
     res.status(500).json({ status: "error" });
   }
 });
