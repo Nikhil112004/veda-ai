@@ -1,14 +1,17 @@
 "use client";
 import BellIcon from "./icons/BellIcon";
 import ArrowIcon from "./icons/ArrowIcon";
-import AssignmentIcon from "./icons/AssignmentIcon";
 import ChevronDown from "./icons/ChevronDown";
 import { useRouter } from "next/navigation";
 
-export default function Navbar() {
+type Props = {
+  className?: string;
+}
+
+export default function Navbar({ className }: Props) {
   const router = useRouter();
   return (
-    <div className="h-[56px] sm:h-[64px] flex items-center justify-between px-[12px] sm:px-6 rounded-2xl bg-white border border-gray-200">
+    <div className={`h-[56px] sm:h-[64px] flex items-center justify-between px-[12px] sm:px-6 rounded-2xl bg-white border border-gray-200 ${className}`}>
       <div className="flex items-center gap-[8px] sm:gap-3">
         <div
           onClick={() => router.back()}
