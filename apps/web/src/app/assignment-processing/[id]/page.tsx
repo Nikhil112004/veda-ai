@@ -67,13 +67,13 @@ export default function AssignmentProcessing() {
   }, [id, router]);
 
   return (
-    <div className="h-full bg-[#ECECEC] flex items-center justify-center">
-      <div className="text-center max-w-[500px] px-[32px]">
+    <div className="min-h-screen bg-[#ECECEC] flex items-center justify-center px-4 sm:px-6">
+     <div className="text-center w-full max-w-[500px]">
         <div className="mb-[32px]">
-          <div className="w-[120px] h-[120px] mx-auto mb-[24px] relative">
+         <div className="w-[80px] h-[80px] sm:w-[120px] sm:h-[120px] mx-auto mb-[20px] sm:mb-[24px] relative">
             <div className="absolute inset-0 bg-gradient-to-br from-[#FF7A00] to-[#FF4D00] rounded-full animate-pulse opacity-20" />
-            <div className="absolute inset-[10px] bg-white rounded-full flex items-center justify-center">
-              <svg width="60" height="60" viewBox="0 0 60 60" fill="none">
+           <div className="absolute inset-[6px] sm:inset-[10px] bg-white rounded-full flex items-center justify-center">
+             <svg width="40" height="40" className="sm:w-[60px] sm:h-[60px]">
                 <path
                   d="M30 10V20M30 40V50M20 30H10M50 30H40M16.5 16.5L23.5 23.5M36.5 36.5L43.5 43.5M43.5 16.5L36.5 23.5M23.5 36.5L16.5 43.5"
                   stroke="#FF4D00"
@@ -86,15 +86,15 @@ export default function AssignmentProcessing() {
             </div>
           </div>
 
-          <h2 className="text-[28px] font-semibold text-[#011625] mb-[12px]">
+          <h2 className="text-[20px] sm:text-[28px] font-semibold text-[#011625] mb-[8px] sm:mb-[12px]">
             Generating Your Assignment
           </h2>
-          <p className="text-[16px] text-[#757575] mb-[32px] leading-[24px]">
+         <p className="text-[14px] sm:text-[16px] text-[#757575] mb-[24px] sm:mb-[32px] leading-[22px] sm:leading-[24px]">
             Our AI is creating a customized question paper based on your
             specifications. This usually takes 30-60 seconds.
           </p>
 
-          <div className="w-full mb-[12px]">
+         <div className="w-full mb-[10px] sm:mb-[12px]">
             <div className="w-full h-[8px] bg-white rounded-full overflow-hidden shadow-inner">
               <div
                 className="h-full bg-gradient-to-r from-[#FF7A00] to-[#FF4D00] rounded-full transition-all duration-500 ease-out"
@@ -107,7 +107,7 @@ export default function AssignmentProcessing() {
           </p>
         </div>
 
-        <div className="bg-white rounded-[16px] p-[24px] shadow">
+       <div className="bg-white rounded-[16px] p-[16px] sm:p-[24px] shadow">
           <div className="space-y-[16px] text-left">
             <ProcessingStep
               label="Analyzing question types"
@@ -167,8 +167,7 @@ function ProcessingStep({ label, isComplete, isActive }: ProcessingStepProps) {
         )}
       </div>
 
-      <span
-        className={`text-[14px] ${
+      <span className={`text-[13px] sm:text-[14px] ${
           isComplete || isActive
             ? "text-[#011625] font-medium"
             : "text-[#999999]"
