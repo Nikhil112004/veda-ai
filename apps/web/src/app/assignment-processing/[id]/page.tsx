@@ -21,14 +21,16 @@ export default function AssignmentProcessing() {
       if (data.jobId === id) {
         setProgress(100);
 
-        localStorage.setItem("paper", JSON.stringify(data.result));
+        localStorage.setItem(
+          "paper",
+          JSON.stringify(data.result || data.data?.result),
+        );
 
         setTimeout(() => {
           router.push(`/generated-paper/${id}`);
         }, 500);
       }
     });
-
     const progressInterval = setInterval(() => {
       setProgress((prev) => {
         if (prev >= 90) return prev;
@@ -45,13 +47,16 @@ export default function AssignmentProcessing() {
 
         console.log("status:", data);
 
-        if (data.data?.status === "completed") {
+        if (data.status === "completed") {
           clearInterval(interval);
           clearInterval(progressInterval);
 
           setProgress(100);
 
-          localStorage.setItem("paper", JSON.stringify(data.result));
+          localStorage.setItem(
+            "paper",
+            JSON.stringify(data.result || data.data?.result),
+          );
 
           setTimeout(() => {
             router.push(`/generated-paper/${id}`);

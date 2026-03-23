@@ -18,7 +18,7 @@ new Worker(
 
       await Assignment.findByIdAndUpdate(assignmentId, {
         status: "completed",
-        result,
+        result: result,
       });
 
       console.log("✅ Completed:", assignmentId);
