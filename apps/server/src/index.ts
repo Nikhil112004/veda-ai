@@ -23,17 +23,16 @@ const connection = new IORedis({
   port: Number(process.env.REDIS_PORT!),
   password: process.env.REDIS_PASSWORD!,
   tls: {},
-    maxRetriesPerRequest: null,
+  maxRetriesPerRequest: null,
 }) as any;
 
 const redis = connection;
 const sub = connection.duplicate();
 
-
 const app = express();
 app.use(
   cors({
-    origin: "*", 
+    origin: "*",
     methods: ["GET", "POST", "PUT", "DELETE"],
   }),
 );
@@ -67,23 +66,27 @@ app.post("/assignments", upload.single("file"), async (req, res) => {
   }
 });
 
-
-
 app.get("/assignments/:id", async (req, res) => {
-  const assignmentId = req.params.id;
+  try {
+    const assignment = await Assignment.findById(req.params.id);
 
-  const data = await redis.get(`job:${assignmentId}`);
+    if (!assignment) {
+      return res.status(404).json({ status: "not_found" });
+    }
 
-  if (!data) {
-    return res.json({ status: "processing" });
+    if (assignment.status !== "completed") {
+      return res.json({ status: "processing" });
+    }
+
+    return res.json({
+      status: "completed",
+      result: assignment.result, // ✅ FIX
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ status: "error" });
   }
-
-  return res.json({
-    status: "completed",
-    data: JSON.parse(data),
-  });
 });
-
 app.delete("/assignments/:id", async (req, res) => {
   await Assignment.findByIdAndDelete(req.params.id);
   res.json({ status: "deleted" });
@@ -91,7 +94,6 @@ app.delete("/assignments/:id", async (req, res) => {
 const httpServer = createServer(app);
 
 initSocket(httpServer);
-
 
 sub.subscribe("job-completed");
 
