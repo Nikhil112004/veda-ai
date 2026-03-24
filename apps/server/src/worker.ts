@@ -90,4 +90,8 @@ new Worker(
 // dummy server
 const app = express();
 app.get("/", (_, res) => res.send("Worker running"));
-app.listen(5001);
+const PORT = process.env.PORT || 5001;
+
+app.listen(PORT, () => {
+  console.log(`Worker running on port ${PORT}`);
+});
