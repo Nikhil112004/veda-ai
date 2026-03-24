@@ -31,17 +31,34 @@ export default function GeneratedPaper() {
 
   useEffect(() => {
     const fetchPaper = async () => {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/assignments/${id}`);
-      const data = await res.json();
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/assignments/${id}`,
+        );
+        const data = await res.json();
 
-      console.log("FRONT DATA:", data); // debug
+        console.log("FRONT DATA:", data);
 
-      if (data?.data?.sections?.length > 0) {
-        setPaper(data.data);
-      } else {
+        // 🔥 FIX
+        if (data?.result?.sections) {
+          setPaper(data.result);
+          localStorage.setItem("paper", JSON.stringify(data.result));
+        } else {
+          const stored = localStorage.getItem("paper");
+          if (stored) {
+            setPaper(JSON.parse(stored));
+          } else {
+            setPaper({ sections: [] }); // safe fallback
+          }
+        }
+      } catch (err) {
+        console.log("❌ Fetch error:", err);
+
         const stored = localStorage.getItem("paper");
         if (stored) {
           setPaper(JSON.parse(stored));
+        } else {
+          setPaper({ sections: [] });
         }
       }
     };
@@ -140,57 +157,58 @@ export default function GeneratedPaper() {
             </div>
           </div>
 
-          {paper?.sections?.map((section, sIndex) => (
-            <div key={sIndex} className="mb-[24px] sm:mb-[32px]">
-              <h2 className="text-[15px] sm:text-[17px] lg:text-[18px] font-semibold text-center mb-[8px] sm:mb-[12px]">
-                {section.title}
-              </h2>
+          {Array.isArray(paper?.sections) &&
+            paper.sections.map((section, sIndex) => (
+              <div key={sIndex} className="mb-[24px] sm:mb-[32px]">
+                <h2 className="text-[15px] sm:text-[17px] lg:text-[18px] font-semibold text-center mb-[8px] sm:mb-[12px]">
+                  {section.title}
+                </h2>
 
-              {section.instruction && (
-                <p className="text-[12px] sm:text-[13px] italic text-gray-500 mb-[12px] sm:mb-[16px] text-center">
-                  {section.instruction}
-                </p>
-              )}
+                {section.instruction && (
+                  <p className="text-[12px] sm:text-[13px] italic text-gray-500 mb-[12px] sm:mb-[16px] text-center">
+                    {section.instruction}
+                  </p>
+                )}
 
-              <div className="space-y-[12px] sm:space-y-[16px]">
-                {section.questions?.map((q, qIndex) => (
-                  <div key={qIndex} className="flex gap-[8px] sm:gap-[12px]">
-                    <span className="font-medium text-[13px] sm:text-[14px]">
-                      {qIndex + 1}.
-                    </span>
-
-                    <div className="flex-1 flex flex-col sm:flex-row sm:justify-between gap-[4px] sm:gap-[8px]">
-                      <span className="text-[13px] sm:text-[14px] leading-[20px]">
-                        {q.text || q.question || "No question provided."}
+                <div className="space-y-[12px] sm:space-y-[16px]">
+                  {section.questions?.map((q, qIndex) => (
+                    <div key={qIndex} className="flex gap-[8px] sm:gap-[12px]">
+                      <span className="font-medium text-[13px] sm:text-[14px]">
+                        {qIndex + 1}.
                       </span>
 
-                      <div className="flex items-center gap-[6px] sm:gap-[8px] sm:justify-end">
-                        {q.difficulty && (
-                          <span
-                            className={`text-[10px] sm:text-[11px] px-[6px] py-[2px] rounded-full font-medium ${
-                              q.difficulty === "easy"
-                                ? "bg-green-100 text-green-700"
-                                : q.difficulty === "medium"
-                                  ? "bg-yellow-100 text-yellow-700"
-                                  : "bg-red-100 text-red-700"
-                            }`}
-                          >
-                            {q.difficulty}
-                          </span>
-                        )}
+                      <div className="flex-1 flex flex-col sm:flex-row sm:justify-between gap-[4px] sm:gap-[8px]">
+                        <span className="text-[13px] sm:text-[14px] leading-[20px]">
+                          {q.text || q.question || "No question provided."}
+                        </span>
 
-                        {q.marks && (
-                          <span className="text-[11px] sm:text-[12px] font-semibold whitespace-nowrap">
-                            {q.marks} Marks
-                          </span>
-                        )}
+                        <div className="flex items-center gap-[6px] sm:gap-[8px] sm:justify-end">
+                          {q.difficulty && (
+                            <span
+                              className={`text-[10px] sm:text-[11px] px-[6px] py-[2px] rounded-full font-medium ${
+                                q.difficulty === "easy"
+                                  ? "bg-green-100 text-green-700"
+                                  : q.difficulty === "medium"
+                                    ? "bg-yellow-100 text-yellow-700"
+                                    : "bg-red-100 text-red-700"
+                              }`}
+                            >
+                              {q.difficulty}
+                            </span>
+                          )}
+
+                          {q.marks && (
+                            <span className="text-[11px] sm:text-[12px] font-semibold whitespace-nowrap">
+                              {q.marks} Marks
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
 
           <div className="text-center border-t pt-[12px] sm:pt-[16px]">
             <p className="text-[13px] sm:text-[14px] font-semibold">
