@@ -132,6 +132,10 @@ app.get("/assignments", async (req, res) => {
     });
   }
 });
+
+app.get("/", (req, res) => {
+  res.send("Veda AI Server is running");
+});
 httpServer.listen(5000, () => {
   console.log("Server running on port 5000");
 });
