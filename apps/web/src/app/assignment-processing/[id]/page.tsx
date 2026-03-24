@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { io } from "socket.io-client";
 
 export default function AssignmentProcessing() {
   const params = useParams();
@@ -23,24 +22,42 @@ export default function AssignmentProcessing() {
     const interval = setInterval(async () => {
       try {
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/assignments/${id}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/assignments/${id}`
         );
-        const data = await res.json();
 
+   
+        if (!res.ok) {
+          console.log("❌ API ERROR:", res.status);
+          return;
+        }
+
+        const data = await res.json();
         console.log("status:", data);
 
-        if (data.status === "completed") {
+        if (data?.status === "completed" && data?.result) {
           clearInterval(interval);
           clearInterval(progressInterval);
 
           setProgress(100);
 
-          localStorage.setItem("paper", JSON.stringify(data.result));
+          localStorage.setItem(
+            "paper",
+            JSON.stringify(data.result || {})
+          );
 
           setTimeout(() => {
             router.push(`/generated-paper/${id}`);
           }, 500);
         }
+
+
+        if (data?.status === "failed") {
+          clearInterval(interval);
+          clearInterval(progressInterval);
+
+          alert("Assignment generation failed ❌");
+        }
+
       } catch (err) {
         console.log("fetch error:", err);
       }
@@ -62,7 +79,7 @@ export default function AssignmentProcessing() {
               <svg width="40" height="40" className="sm:w-[60px] sm:h-[60px]">
                 <g className="animate-spin origin-center">
                   <path
-                    d="..."
+                    d="M2 6L5 9L10 3"
                     stroke="#FF4D00"
                     strokeWidth="3"
                     strokeLinecap="round"
@@ -76,6 +93,7 @@ export default function AssignmentProcessing() {
           <h2 className="text-[20px] sm:text-[28px] font-semibold text-[#011625] mb-[8px] sm:mb-[12px]">
             Generating Your Assignment
           </h2>
+
           <p className="text-[14px] sm:text-[16px] text-[#757575] mb-[24px] sm:mb-[32px] leading-[22px] sm:leading-[24px]">
             Our AI is creating a customized question paper based on your
             specifications. This usually takes 30-60 seconds.
@@ -89,6 +107,7 @@ export default function AssignmentProcessing() {
               />
             </div>
           </div>
+
           <p className="text-[14px] font-medium text-[#757575]">
             {progress}% Complete
           </p>
@@ -137,8 +156,8 @@ function ProcessingStep({ label, isComplete, isActive }: ProcessingStepProps) {
           isComplete
             ? "bg-[#4CAF50]"
             : isActive
-              ? "bg-[#FF4D00] animate-pulse"
-              : "bg-[#E5E5E5]"
+            ? "bg-[#FF4D00] animate-pulse"
+            : "bg-[#E5E5E5]"
         }`}
       >
         {isComplete && (

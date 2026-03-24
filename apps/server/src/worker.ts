@@ -24,48 +24,44 @@ new Worker(
 
       const aiResponse = await generatePaper(payload);
 
-      let parsedResult;
+const typedResponse: any = aiResponse;
 
-      try {
-        parsedResult =
-          typeof aiResponse === "string" ? JSON.parse(aiResponse) : aiResponse;
-        if (!parsedResult?.sections) {
-          throw new Error("Invalid AI structure");
-        }
-      } catch (err) {
-        console.log("⚠️ Using fallback structure");
+let result;
 
-        parsedResult = {
-          sections: [
-            {
-              title: "Section A",
-              instruction: "Answer all questions",
-              questions: [
-                {
-                  text: "Fallback question",
-                  difficulty: "easy",
-                  marks: 2,
-                },
-              ],
-            },
-          ],
-        };
-      }
+if (
+  typeof typedResponse === "object" &&
+  typedResponse !== null &&
+  typedResponse.sections
+) {
+  result = typedResponse;
+} else {
+  result = {
+    sections: [
+      {
+        title: "Section A",
+        instruction: "Answer all questions",
+        questions: [
+          {
+            text:
+              typeof aiResponse === "string"
+                ? aiResponse.slice(0, 100)
+                : "Generated question",
+            difficulty: "easy",
+            marks: 2,
+          },
+        ],
+      },
+    ],
+  };
+}
 
       await Assignment.findByIdAndUpdate(assignmentId, {
         status: "completed",
-        result: parsedResult,
+        result: result,
       });
 
-      await pub.publish(
-        "job-completed",
-        JSON.stringify({
-          jobId: assignmentId,
-          result: parsedResult,
-        }),
-      );
-
       console.log("✅ Completed:", assignmentId);
+
     } catch (err) {
       console.log("❌ Worker error:", err);
 
@@ -81,9 +77,10 @@ new Worker(
       password: process.env.REDIS_PASSWORD,
       tls: {},
     },
-  },
+  }
 );
 
+// dummy server
 const app = express();
 app.get("/", (_, res) => res.send("Worker running"));
 app.listen(5001);

@@ -1,9 +1,7 @@
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
-import { generatePaper } from "./utils/gemini";
 import { assignmentQueue } from "./utils/queue";
-import { results } from "./store";
 import { createServer } from "http";
 import { initSocket } from "./socket";
 import { getIO } from "./socket";
@@ -12,6 +10,7 @@ import multer from "multer";
 import { connectDB } from "./db";
 import { Assignment } from "./models/Assignment";
 import mongoose from "mongoose";
+
 
 const upload = multer({ dest: "uploads/" });
 
@@ -67,12 +66,9 @@ app.post("/assignments", upload.single("file"), async (req, res) => {
   }
 });
 
-
-
 app.get("/assignments/:id", async (req, res) => {
   try {
     const id = req.params.id;
-
 
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ status: "invalid_id" });
@@ -84,13 +80,18 @@ app.get("/assignments/:id", async (req, res) => {
       return res.status(404).json({ status: "not_found" });
     }
 
+    if (assignment.status !== "completed") {
+      return res.json({
+        status: assignment.status,
+      });
+    }
+
     return res.json({
-      status: assignment.status,
+      status: "completed",
       result: assignment.result,
     });
-
   } catch (err) {
-    console.log("❌ API ERROR:", err); 
+    console.log("❌ API ERROR:", err);
     res.status(500).json({ status: "error" });
   }
 });
