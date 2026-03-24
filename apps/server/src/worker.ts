@@ -24,41 +24,48 @@ new Worker(
 
       const aiResponse = await generatePaper(payload);
 
-const typedResponse: any = aiResponse;
+      let result;
 
-let result;
 
-if (
-  typeof typedResponse === "object" &&
-  typedResponse !== null &&
-  typedResponse.sections
-) {
-  result = typedResponse;
-} else {
-  result = {
-    sections: [
-      {
-        title: "Section A",
-        instruction: "Answer all questions",
-        questions: [
-          {
-            text:
-              typeof aiResponse === "string"
-                ? aiResponse.slice(0, 100)
-                : "Generated question",
-            difficulty: "easy",
-            marks: 2,
-          },
-        ],
-      },
-    ],
-  };
-}
+      if (
+        typeof aiResponse === "object" &&
+        aiResponse !== null &&
+        "sections" in aiResponse
+      ) {
+        result = aiResponse;
+      } else {
+        console.log("⚠️ Invalid AI response → using fallback");
+
+        result = {
+          sections: [
+            {
+              title: "Section A",
+              instruction: "Answer all questions",
+              questions: [
+                {
+                  text: "Fallback question",
+                  difficulty: "easy",
+                  marks: 2,
+                },
+              ],
+            },
+          ],
+        };
+      }
 
       await Assignment.findByIdAndUpdate(assignmentId, {
         status: "completed",
         result: result,
       });
+
+
+      await pub.publish(
+        "job-completed",
+        JSON.stringify({
+          jobId: assignmentId,
+          result: result,
+        })
+      );
 
       console.log("✅ Completed:", assignmentId);
 
