@@ -52,7 +52,7 @@ Generate a question paper.
 
       const parsed = paperSchema.parse(json);
 
-      return parsed; 
+      return parsed;
     } catch (err) {
       console.log("⚠️ Gemini failed → using fallback");
 
@@ -60,7 +60,7 @@ Generate a question paper.
         sections: [
           {
             title: "Section A",
-            instruction: "Attempt all questions",
+            instruction: "Answer all questions (Short Answer)",
             questions: [
               {
                 text: "What is Artificial Intelligence?",
@@ -72,10 +72,67 @@ Generate a question paper.
                 difficulty: "easy",
                 marks: 2,
               },
+              {
+                text: "What is Data Science?",
+                difficulty: "easy",
+                marks: 2,
+              },
+              {
+                text: "What is an algorithm?",
+                difficulty: "easy",
+                marks: 2,
+              },
+              {
+                text: "Differentiate between AI and ML.",
+                difficulty: "medium",
+                marks: 4,
+              },
+            ],
+          },
+          {
+            title: "Section B",
+            instruction: "Answer briefly",
+            questions: [
+              {
+                text: "Explain supervised learning with an example.",
+                difficulty: "medium",
+                marks: 5,
+              },
+              {
+                text: "Explain unsupervised learning.",
+                difficulty: "medium",
+                marks: 5,
+              },
+              {
+                text: "What are neural networks?",
+                difficulty: "medium",
+                marks: 5,
+              },
+              {
+                text: "Explain the role of data in AI.",
+                difficulty: "medium",
+                marks: 5,
+              },
+            ],
+          },
+          {
+            title: "Section C",
+            instruction: "Long Answer Questions",
+            questions: [
+              {
+                text: "Explain the complete lifecycle of a Machine Learning model.",
+                difficulty: "hard",
+                marks: 10,
+              },
+              {
+                text: "Discuss real-world applications of Artificial Intelligence.",
+                difficulty: "hard",
+                marks: 10,
+              },
             ],
           },
         ],
-      }; 
+      };
     }
   } catch (err) {
     console.log("❌ Gemini Error:", err);
@@ -94,6 +151,6 @@ Generate a question paper.
           ],
         },
       ],
-    }; 
+    };
   }
 }
