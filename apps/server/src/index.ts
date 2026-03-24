@@ -120,14 +120,18 @@ app.get("/assignments", async (req, res) => {
 
     res.json({
       status: "success",
-      data: assignments,
+      data: assignments || [],
     });
+
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ status: "error" });
+    console.log("❌ /assignments ERROR:", err);
+
+    res.status(200).json({
+      status: "success",
+      data: [],
+    });
   }
 });
-
 httpServer.listen(5000, () => {
   console.log("Server running on port 5000");
 });

@@ -32,7 +32,8 @@ const assignmentSchema = new Schema(
     totalMarks: Number,
     instructions: String,
     result: {
-      sections: [sectionSchema],
+      type: Object,
+      default: null,
     },
   },
   { timestamps: true },
