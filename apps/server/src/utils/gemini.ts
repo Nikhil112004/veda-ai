@@ -54,7 +54,7 @@ Generate a question paper.
 
       return parsed;
     } catch (err) {
-      console.log("⚠️ Gemini failed → using fallback");
+  console.log("❌ GEMINI ERROR:", err);
 
       return {
         sections: [
